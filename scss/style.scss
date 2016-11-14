@@ -1,0 +1,180 @@
+@import "compass/css3";
+
+$fTimming : 0.3;
+$hoverTextTimming:0.3;
+$menuItems: 6;
+$rotateStep: 60deg;
+
+*{margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family: 'Open Sans', sans-serif;
+  background:#E3DFD2;
+}
+ul{list-style-type:none;}
+a,a:hover,a:focus,a:visited{text-decoration:none;}
+nav{
+  position:relative;
+  width:70vmin; height:70vmin;
+  min-width:500px;min-height:500px;
+  margin:0 auto;
+  overflow:hidden;
+}
+
+/** MENU BUTTON ******************************************/
+#menuBtn {
+	position: absolute;
+	top: 45%; left: 45%;
+	width: 10%; height:10%;
+	z-index: 2;
+  will-change: transform;
+  svg{
+    display:block;
+  }
+  svg polygon:hover{
+    animation: hexHover 0.7s;
+    cursor: pointer;
+  }
+  span {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 20px; height: 2px;
+    padding: 8px 0;
+    background-clip: content-box;
+    background-color: #585247;
+    transform: translate(-50%, -50%);
+    transition: background-color $fTimming+s;
+    pointer-events:none;
+    &:before, &:after {
+      position: absolute;
+      background-color: #585247;
+      content: '';
+      width: 20px; height: 2px;
+      transition: transform $fTimming+s;
+    }
+    &:before{top: 0;} &:after{bottom: 0px;}
+  }
+}
+@keyframes hexHover{
+  0%  {stroke-dasharray: 0,0,300;}
+  10% {stroke-dasharray: 0,20,300;}
+  100%{stroke-dasharray: 300,20,300;}
+}
+/** MENU ITEMS *******************************************/
+#hex{
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  transform:scale(0.1) translatez(0);
+  transition: transform 0.05s $fTimming+s;
+}
+.tr{
+  position:absolute;
+  left:50%;bottom:50%;
+  width:34.6%; height:40%;
+  transform-origin:0 100%;
+  overflow:hidden;
+  transform:skewY(-30deg);
+  opacity:0;
+}
+@for $i from 0 through $menuItems {
+  .tr:nth-child(#{$i + 1}) {
+    transform: rotate($rotateStep*$i) skewY(-$rotateStep/2);
+    transition:opacity $fTimming+s , transform $fTimming+s;
+    .clip{
+      transform: skewY($rotateStep/2) rotate($rotateStep/2);
+    }
+    .content{
+      transform:rotate(-$rotateStep*$i - $rotateStep/2);
+        @if $i == 0      { transform-origin:0 0; padding-left:15%; perspective-origin:30% 70%;}
+        @else if $i == 1 { top:-8%; left: 6.67%;padding-left:30%; perspective-origin:30% 50%;}
+        @else if $i == 2 { transform-origin:42.3% 36.5%; padding-left:10%; perspective-origin:30% 30%;}
+        @else if $i == 3 {transform-origin:65.4% 38.4%; padding-left:30%; perspective-origin:70% 30%; }
+        @else if $i == 4 { top:-8%; left: 6.67%;padding-left:15%; perspective-origin:70% 50%;}
+        @else if $i == 5 {transform-origin:106.7% 25.2%; padding-left:30%; perspective-origin:70% 70%; }
+
+    }
+  }
+  .active .tr:nth-child(#{$i + 1}){
+    transform: rotate($rotateStep*$i) skewY(-$rotateStep/2) translate(10%, -10%);
+    $transitionTimming: $fTimming*$i/10+ 0.05;
+    transition:opacity $fTimming+s $transitionTimming+s, transform $fTimming+s $transitionTimming+s cubic-bezier(0,2.3,0.8,1);
+  }
+}
+ 
+.clip{
+  position:absolute;
+  top:0; left:0;
+  width:116%; height:86.66%;
+  overflow:hidden;
+  transform-origin:0 0;
+}
+.content{
+  position:absolute;
+  width:86.6%; height:116%;
+  top:0; left:0;
+  box-sizing:border-box;
+  font-size:2vmin;
+  perspective:500px;
+  background:#000;
+  img{
+    position:absolute;
+    top:0; left:-50%; right:-50%;
+    margin:auto;
+    height:100%;
+    z-index:-1;
+    transition: opacity $hoverTextTimming+s;
+    pointer-events:none;
+  }
+  h2, p{
+    position:absolute;
+    width:60%;
+    line-height:1em;
+    color:#fff;
+    opacity:0;
+    transform:translateZ(-50px);
+  }
+  h2{
+    bottom:50%;
+    text-transform:uppercase;
+    font-weight:900;
+    font-size:2em;
+    transition: transform $hoverTextTimming+s cubic-bezier(0,2.3,0.8,1), opacity $hoverTextTimming+s;
+  }
+  p{
+    position:absolute;
+    top:50%;
+    font-size:1em;
+    transition: transform $hoverTextTimming+s $hoverTextTimming/4+s cubic-bezier(0,2.3,0.8,1), opacity $hoverTextTimming+s $hoverTextTimming/4+s; ;
+  }
+  &:hover h2, &:hover p{
+    opacity:1;
+    transform: translatez(0);
+  }
+  &:hover img{
+    opacity:0.4;
+  }
+}
+
+.active{
+  #menuBtn{
+    &:hover svg polygon{
+      animation: none;
+    }
+    span{
+      background-color: transparent;
+      &:before{
+        transform: translatey(8px) rotate(45deg);
+      }
+      &:after{
+        transform: translatey(-8px) rotate(-45deg);
+      }
+    }
+  }
+  #hex{
+    transform: scale(0.9) translatez(0);
+    transition:none;
+    will-change: transform;
+  }
+  .tr{opacity:1;will-change: transform;}
+}
